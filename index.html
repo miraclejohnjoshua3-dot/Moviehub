@@ -39,11 +39,15 @@
 
         /* Modal player overlay */
         #player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
-        .player-wrapper { width: 100%; max-width: 900px; height: 65vh; padding: 0 10px; box-sizing: border-box; position: relative; }
         
+        .server-selector { display: flex; gap: 8px; margin-bottom: 12px; }
+        .server-btn { background: #222; border: 1px solid #444; color: #aaa; padding: 6px 14px; border-radius: 15px; font-size: 12px; cursor: pointer; font-weight: 600; }
+        .server-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+        .player-wrapper { width: 100%; max-width: 900px; height: 60vh; padding: 0 10px; box-sizing: border-box; }
         #player-iframe { width: 100%; height: 100%; border: none; border-radius: 12px; background: #000; }
         
-        .modal-actions { display: flex; gap: 15px; margin-top: 20px; }
+        .modal-actions { display: flex; gap: 15px; margin-top: 15px; }
         .action-btn { background: #222; color: white; border: 1px solid #444; padding: 10px 20px; font-size: 14px; border-radius: 20px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
         .action-btn.active-download { background: var(--primary); border-color: var(--primary); }
         .close-btn { background: #333; color: white; border: none; padding: 10px 25px; font-size: 14px; border-radius: 20px; cursor: pointer; font-weight: bold; }
@@ -90,6 +94,11 @@
 
     <!-- Watch Modal -->
     <div id="player-modal">
+        <div class="server-selector">
+            <button class="server-btn active" onclick="changeServer(0, this)">Server 1 (AutoEmbed)</button>
+            <button class="server-btn" onclick="changeServer(1, this)">Server 2 (MultiEmbed)</button>
+            <button class="server-btn" onclick="changeServer(2, this)">Server 3 (VidSrc)</button>
+        </div>
         <div class="player-wrapper">
             <iframe id="player-iframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
@@ -204,7 +213,10 @@
 
         function openPlayer(movie) {
             activeMovie = movie;
-            // Switched to autoembed.cc player stream to bypass Cloudflare verification blocks
+            document.querySelectorAll('.server-btn').forEach((b, idx) => {
+                if(idx === 0) b.classList.add('active');
+                else b.classList.remove('active');
+            });
             iframe.src = `https://autoembed.cc/embed/movie/${movie.id}`;
             modal.style.display = 'flex';
 
@@ -215,6 +227,20 @@
             saveStoredList('moviehub_recents', recents);
 
             updateDownloadButtonState();
+        }
+
+        function changeServer(index, element) {
+            if(!activeMovie) return;
+            document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+            element.classList.add('active');
+
+            if(index === 0) {
+                iframe.src = `https://autoembed.cc/embed/movie/${activeMovie.id}`;
+            } else if(index === 1) {
+                iframe.src = `https://multiembed.mov/?video_id=${activeMovie.id}&tmdb=1`;
+            } else if(index === 2) {
+                iframe.src = `https://vidsrc.cc/v2/embed/movie/${activeMovie.id}`;
+            }
         }
 
         function closePlayer() {
