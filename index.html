@@ -3,47 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieHub</title>
+    <title>MovieHub - Ultimate Stream</title>
     <style>
-        :root { --primary: #e50914; --bg: #121212; --card-bg: #1e1e1e; }
-        body { background-color: var(--bg); color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+        :root { --primary: #e50914; --bg: #0b0b0b; --card-bg: #161616; --text-gray: #a0a0a0; }
+        * { box-sizing: border-box; }
+        body { background-color: var(--bg); color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding-bottom: 30px; }
         
-        header { padding: 15px; text-align: center; background: rgba(31, 31, 31, 0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); border-bottom: 1px solid #282828; }
-        h1 { color: var(--primary); margin: 0 0 10px 0; font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+        /* Header & Navigation Tabs */
+        header { padding: 15px 20px; background: rgba(11, 11, 11, 0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        h1 { color: var(--primary); margin: 0; font-size: 20px; font-weight: 900; letter-spacing: 1.5px; }
         
-        .search-container { display: flex; justify-content: center; margin-bottom: 10px; }
-        .search-box { width: 90%; max-width: 400px; padding: 10px 15px; border-radius: 20px; border: none; background: #2a2a2a; color: #fff; font-size: 15px; outline: none; transition: box-shadow 0.2s; }
-        .search-box:focus { box-shadow: 0 0 0 2px var(--primary); }
+        .nav-tabs { display: flex; gap: 15px; }
+        .nav-tab { background: none; border: none; color: var(--text-gray); font-size: 14px; font-weight: 600; cursor: pointer; padding: 5px 0; transition: 0.2s; }
+        .nav-tab.active { color: #fff; border-bottom: 2px solid var(--primary); }
 
-        .filters { display: flex; gap: 8px; overflow-x: auto; padding: 5px 15px 10px 15px; scrollbar-width: none; }
+        /* Search & Filters */
+        .search-area { padding: 15px 20px 5px 20px; }
+        .search-box { width: 100%; padding: 12px 18px; border-radius: 25px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
+        .search-box:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(229, 9, 20, 0.3); }
+
+        .filters { display: flex; gap: 8px; overflow-x: auto; padding: 10px 20px; scrollbar-width: none; }
         .filters::-webkit-scrollbar { display: none; }
-        .chip { background: #252525; border: none; color: #aaa; padding: 6px 14px; border-radius: 15px; font-size: 13px; cursor: pointer; white-space: nowrap; transition: 0.2s; }
-        .chip.active, .chip:hover { background: var(--primary); color: #fff; }
+        .chip { background: #1f1f1f; border: 1px solid #333; color: var(--text-gray); padding: 6px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap; font-weight: 500; transition: 0.2s; }
+        .chip.active, .chip:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
 
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        /* Movie Grid */
+        .section-title { font-size: 16px; font-weight: 700; margin: 20px 20px 10px 20px; color: #ddd; letter-spacing: 0.5px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; }
         @media(min-width: 600px) { .grid { grid-template-columns: repeat(4, 1fr); } }
 
-        .card { background: var(--card-bg); border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #222; position: relative; }
         .card:active { transform: scale(0.97); }
-        .card img { width: 100%; height: 210px; object-fit: cover; display: block; }
-        .card-info { padding: 10px; }
-        .card-info h3 { font-size: 14px; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
-        .meta { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; }
+        .card img { width: 100%; height: 220px; object-fit: cover; display: block; }
+        .card-info { padding: 12px; }
+        .card-info h3 { font-size: 14px; margin: 0 0 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+        .meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-gray); }
         .rating { color: #f5c518; font-weight: bold; }
 
         /* Modal player overlay */
-        #player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
-        .player-wrapper { width: 100%; max-width: 800px; height: 60vh; padding: 0 10px; box-sizing: border-box; }
-        #player-iframe { width: 100%; height: 100%; border: none; border-radius: 8px; background: #000; }
-        .close-btn { margin-top: 20px; background: var(--primary); color: white; border: none; padding: 10px 25px; font-size: 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        #player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
+        .player-wrapper { width: 100%; max-width: 900px; height: 65vh; padding: 0 10px; box-sizing: border-box; }
+        #player-iframe { width: 100%; height: 100%; border: none; border-radius: 12px; background: #000; }
+        
+        .modal-actions { display: flex; gap: 15px; margin-top: 20px; }
+        .action-btn { background: #222; color: white; border: 1px solid #444; padding: 10px 20px; font-size: 14px; border-radius: 20px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .action-btn.active-download { background: var(--primary); border-color: var(--primary); }
+        .close-btn { background: #333; color: white; border: none; padding: 10px 25px; font-size: 14px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+
+        /* Footer Branding */
+        .app-footer { text-align: center; padding: 30px 20px 10px 20px; color: var(--text-gray); font-size: 13px; letter-spacing: 0.5px; }
+        .app-footer span { color: var(--primary); font-weight: bold; }
+
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-gray); grid-column: span 2; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🎬 MOVIEHUB</h1>
-        <div class="search-container">
-            <input type="text" id="search" class="search-box" placeholder="Search movies..." oninput="handleSearch(this.value)">
+        <h1>MOVIEHUB</h1>
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchMainTab('home', this)">Home</button>
+            <button class="nav-tab" onclick="switchMainTab('recents', this)">Recents</button>
+            <button class="nav-tab" onclick="switchMainTab('downloads', this)">Downloads</button>
+        </div>
+    </header>
+
+    <div id="home-view">
+        <div class="search-area">
+            <input type="text" id="search" class="search-box" placeholder="Search movies, shows..." oninput="handleSearch(this.value)">
         </div>
         <div class="filters">
             <button class="chip active" onclick="filterCategory('trending', this)">Trending</button>
@@ -52,17 +79,27 @@
             <button class="chip" onclick="filterCategory('action', this, 28)">Action</button>
             <button class="chip" onclick="filterCategory('comedy', this, 35)">Comedy</button>
             <button class="chip" onclick="filterCategory('horror', this, 27)">Horror</button>
+            <button class="chip" onclick="filterCategory('scifi', this, 878)">Sci-Fi</button>
         </div>
-    </header>
+        <div class="section-title" id="grid-title">Trending Today</div>
+    </div>
 
+    <div id="dynamic-section-title" class="section-title" style="display:none;"></div>
     <div class="grid" id="movie-grid"></div>
+
+    <div class="app-footer">
+        MovieHub v2.0 • Created by <span>Miracle</span>
+    </div>
 
     <!-- Watch Modal -->
     <div id="player-modal">
         <div class="player-wrapper">
-            <iframe id="player-iframe" src="" allowfullscreen></iframe>
+            <iframe id="player-iframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
-        <button class="close-btn" onclick="closePlayer()">Close Player</button>
+        <div class="modal-actions">
+            <button id="download-btn" class="action-btn" onclick="toggleDownload()">💾 Save to Downloads</button>
+            <button class="close-btn" onclick="closePlayer()">Close</button>
+        </div>
     </div>
 
     <script>
@@ -70,22 +107,33 @@
         const grid = document.getElementById('movie-grid');
         const modal = document.getElementById('player-modal');
         const iframe = document.getElementById('player-iframe');
+        const downloadBtn = document.getElementById('download-btn');
+
+        let currentView = 'home';
+        let activeMovie = null;
+
+        function getStoredList(key) {
+            try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; }
+        }
+        function saveStoredList(key, list) {
+            localStorage.setItem(key, JSON.stringify(list));
+        }
 
         async function fetchMovies(url) {
             try {
-                grid.innerHTML = '<p style="text-align:center; grid-column: span 2; color:#777; padding:20px;">Loading movies...</p>';
+                grid.innerHTML = '<div class="empty-state">Loading cinematic library...</div>';
                 const res = await fetch(url);
                 const data = await res.json();
                 displayMovies(data.results);
             } catch (err) {
-                grid.innerHTML = '<p style="text-align:center; grid-column: span 2; color:#e50914;">Failed to load content.</p>';
+                grid.innerHTML = '<div class="empty-state" style="color:var(--primary);">Failed to connect to TMDB stream.</div>';
             }
         }
 
         function displayMovies(movies) {
             grid.innerHTML = '';
             if (!movies || movies.length === 0) {
-                grid.innerHTML = '<p style="text-align:center; grid-column: span 2; color:#777; padding:20px;">No movies found.</p>';
+                grid.innerHTML = '<div class="empty-state">No movies found in this view.</div>';
                 return;
             }
             movies.forEach(movie => {
@@ -94,7 +142,7 @@
                 card.className = 'card';
                 const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
                 card.innerHTML = `
-                    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" loading="lazy">
+                    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title || movie.name}" loading="lazy">
                     <div class="card-info">
                         <h3>${movie.title || movie.name}</h3>
                         <div class="meta">
@@ -103,9 +151,34 @@
                         </div>
                     </div>
                 `;
-                card.onclick = () => openPlayer(movie.id);
+                card.onclick = () => openPlayer(movie);
                 grid.appendChild(card);
             });
+        }
+
+        function switchMainTab(tab, element) {
+            currentView = tab;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            const homeView = document.getElementById('home-view');
+            const dynTitle = document.getElementById('dynamic-section-title');
+
+            if (tab === 'home') {
+                homeView.style.display = 'block';
+                dynTitle.style.display = 'none';
+                fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
+            } else if (tab === 'recents') {
+                homeView.style.display = 'none';
+                dynTitle.style.display = 'block';
+                dynTitle.innerText = 'Recently Watched';
+                displayMovies(getStoredList('moviehub_recents'));
+            } else if (tab === 'downloads') {
+                homeView.style.display = 'none';
+                dynTitle.style.display = 'block';
+                dynTitle.innerText = 'Downloaded / Saved Favorites';
+                displayMovies(getStoredList('moviehub_downloads'));
+            }
         }
 
         function handleSearch(query) {
@@ -132,18 +205,54 @@
             }
         }
 
-        function openPlayer(movieId) {
-            iframe.src = `https://vidsrc.xyz/embed/movie?tmdb=${movieId}`;
+        function openPlayer(movie) {
+            activeMovie = movie;
+            iframe.src = `https://multiembed.mov/?video_id=${movie.id}&tmdb=1`;
             modal.style.display = 'flex';
+
+            let recents = getStoredList('moviehub_recents');
+            recents = recents.filter(m => m.id !== movie.id);
+            recents.unshift(movie);
+            if(recents.length > 20) recents.pop();
+            saveStoredList('moviehub_recents', recents);
+
+            updateDownloadButtonState();
         }
 
         function closePlayer() {
             iframe.src = '';
             modal.style.display = 'none';
+            if(currentView === 'recents') switchMainTab('recents');
         }
 
-        // Initial load
+        function updateDownloadButtonState() {
+            if (!activeMovie) return;
+            let downloads = getStoredList('moviehub_downloads');
+            const exists = downloads.some(m => m.id === activeMovie.id);
+            if (exists) {
+                downloadBtn.className = 'action-btn active-download';
+                downloadBtn.innerHTML = '✓ Saved in Downloads';
+            } else {
+                downloadBtn.className = 'action-btn';
+                downloadBtn.innerHTML = '💾 Save to Downloads';
+            }
+        }
+
+        function toggleDownload() {
+            if (!activeMovie) return;
+            let downloads = getStoredList('moviehub_downloads');
+            const index = downloads.findIndex(m => m.id === activeMovie.id);
+            if (index > -1) {
+                downloads.splice(index, 1);
+            } else {
+                downloads.unshift(activeMovie);
+            }
+            saveStoredList('moviehub_downloads', downloads);
+            updateDownloadButtonState();
+        }
+
         fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
     </script>
 </body>
-</html>
+    </html>
+    
