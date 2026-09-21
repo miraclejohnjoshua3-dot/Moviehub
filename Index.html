@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieHub</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f0f0f; color: #ffffff; padding: 12px; }
+        header { text-align: center; padding: 15px 0 20px 0; }
+        h1 { color: #e50914; font-size: 24px; letter-spacing: 1px; }
+        .movie-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .movie-card { background: #1a1a1a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+        .movie-card img { width: 100%; height: 210px; object-fit: cover; }
+        .movie-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .movie-info h3 { font-size: 13px; line-height: 1.3; margin-bottom: 6px; }
+        .movie-info span { font-size: 11px; color: #aaaaaa; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MOVIEHUB</h1>
+    </header>
+
+    <div class="movie-grid" id="movieGrid">Loading MovieHub...</div>
+
+    <script>
+        const API_KEY = "b64e8bef6eee50eb2535a4705d18ce5e";
+        const CACHE_KEY = "moviehub_trending";
+        const CACHE_TIME_KEY = "moviehub_time";
+        const CACHE_DURATION = 1000 * 60 * 30; // 30 minutes cache
+
+        async function loadMovies() {
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
+            const now = new Date().getTime();
+
+            // Load from cache instantly if available for high speed
+            if (cachedData && cachedTime && (now - cachedTime < CACHE_DURATION)) {
+                displayMovies(JSON.parse(cachedData));
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}&language=en-US`);
+                const data = await response.json();
+                
+                localStorage.setItem(CACHE_KEY, JSON.stringify(data.results));
+                localStorage.setItem(CACHE_TIME_KEY, now);
+
+                displayMovies(data.results);
+            } catch (error) {
+                if (cachedData) {
+                    displayMovies(JSON.parse(cachedData));
+                } else {
+                    document.getElementById('movieGrid').innerText = "Failed to load movies. Check your connection.";
+                }
+            }
+        }
+
+        function displayMovies(movies) {
+            const grid = document.getElementById('movieGrid');
+            grid.innerHTML = '';
+            
+            movies.forEach(movie => {
+                const posterUrl = movie.poster_path 
+                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
+                    : 'https://via.placeholder.com/500x750?text=No+Image';
+
+                const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
+
+                const card = `
+                    <div class="movie-card">
+                        <img src="${posterUrl}" alt="${movie.title}" loading="lazy">
+                        <div class="movie-info">
+                            <h3>${movie.title}</h3>
+                            <span>${releaseYear}</span>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        loadMovies();
+    </script>
+</body>
+</html>
