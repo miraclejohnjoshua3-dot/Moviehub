@@ -5,85 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MovieHub</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f0f0f; color: #ffffff; padding: 12px; }
-        header { text-align: center; padding: 15px 0 20px 0; }
-        h1 { color: #e50914; font-size: 24px; letter-spacing: 1px; }
-        .movie-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .movie-card { background: #1a1a1a; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
-        .movie-card img { width: 100%; height: 210px; object-fit: cover; }
-        .movie-info { padding: 10px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .movie-info h3 { font-size: 13px; line-height: 1.3; margin-bottom: 6px; }
-        .movie-info span { font-size: 11px; color: #aaaaaa; }
+        :root { --primary: #e50914; --bg: #121212; --card-bg: #1e1e1e; }
+        body { background-color: var(--bg); color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+        
+        header { padding: 15px; text-align: center; background: rgba(31, 31, 31, 0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); border-bottom: 1px solid #282828; }
+        h1 { color: var(--primary); margin: 0 0 10px 0; font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+        
+        .search-container { display: flex; justify-content: center; margin-bottom: 10px; }
+        .search-box { width: 90%; max-width: 400px; padding: 10px 15px; border-radius: 20px; border: none; background: #2a2a2a; color: #fff; font-size: 15px; outline: none; transition: box-shadow 0.2s; }
+        .search-box:focus { box-shadow: 0 0 0 2px var(--primary); }
+
+        .filters { display: flex; gap: 8px; overflow-x: auto; padding: 5px 15px 10px 15px; scrollbar-width: none; }
+        .filters::-webkit-scrollbar { display: none; }
+        .chip { background: #252525; border: none; color: #aaa; padding: 6px 14px; border-radius: 15px; font-size: 13px; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .chip.active, .chip:hover { background: var(--primary); color: #fff; }
+
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
+        @media(min-width: 600px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .card { background: var(--card-bg); border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .card:active { transform: scale(0.97); }
+        .card img { width: 100%; height: 210px; object-fit: cover; display: block; }
+        .card-info { padding: 10px; }
+        .card-info h3 { font-size: 14px; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+        .meta { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; }
+        .rating { color: #f5c518; font-weight: bold; }
+
+        /* Modal player overlay */
+        #player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .player-wrapper { width: 100%; max-width: 800px; height: 60vh; padding: 0 10px; box-sizing: border-box; }
+        #player-modal iframe { width: 100%; height: 100%; border: none; border-radius: 8px; background: #000; }
+        .close-btn { margin-top: 20px; background: var(--primary); color: white; border: none; padding: 10px 25px; font-size: 15px; border-radius: 20px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>MOVIEHUB</h1>
+        <h1>🎬 MOVIEHUB</h1>
+        <div class="search-container">
+            <input type="text" id="search" class="search-box" placeholder="Search movies..." oninput="handleSearch(this.value)">
+        </div>
+        <div class="filters">
+            <button class="chip active" onclick="filterCategory('trending', this)">Trending</button>
+            <button class="chip" onclick="filterCategory('popular', this)">Popular</button>
+            <button class="chip" onclick="filterCategory('top_rated', this)">Top Rated</button>
+            <button class="chip" onclick="filterCategory('action', this, 28)">Action</button>
+            <button class="chip" onclick="filterCategory('comedy', this, 35)">Comedy</button>
+            <button class="chip" onclick="filterCategory('horror', this, 27)">Horror</button>
+        </div>
     </header>
 
-    <div class="movie-grid" id="movieGrid">Loading MovieHub...</div>
+    <div class="grid" id="movie-grid"></div>
+
+    <!-- Watch Modal -->
+    <div id="player-modal">
+        <div class="player-wrapper">
+            <iframe id="movie-iframe" src="" allowfullscreen></iframe>
+        </div>
+        <button class="close-btn" onclick="closePlayer()">Close Player</button>
+    </div>
 
     <script>
-        const API_KEY = "b64e8bef6eee50eb2535a4705d18ce5e";
-        const CACHE_KEY = "moviehub_trending";
-        const CACHE_TIME_KEY = "moviehub_time";
-        const CACHE_DURATION = 1000 * 60 * 30; // 30 minutes cache
+        const API_KEY = 'b64e8bef6eee50eb2535a4705d18ce5e';
+        const grid = document.getElementById('movie-grid');
+        const modal = document.getElementById('player-modal');
+        const iframe = document.getElementById('movie-iframe');
 
-        async function loadMovies() {
-            const cachedData = localStorage.getItem(CACHE_KEY);
-            const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
-            const now = new Date().getTime();
-
-            // Load from cache instantly if available for high speed
-            if (cachedData && cachedTime && (now - cachedTime < CACHE_DURATION)) {
-                displayMovies(JSON.parse(cachedData));
-                return;
-            }
-
+        async function fetchMovies(url) {
             try {
-                const response = await fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}&language=en-US`);
-                const data = await response.json();
-                
-                localStorage.setItem(CACHE_KEY, JSON.stringify(data.results));
-                localStorage.setItem(CACHE_TIME_KEY, now);
-
+                grid.innerHTML = '<p style="text-align:center; grid-column: span 2; color:#777; padding:20px;">Loading movies...</p>';
+                const res = await fetch(url);
+                const data = await res.json();
                 displayMovies(data.results);
-            } catch (error) {
-                if (cachedData) {
-                    displayMovies(JSON.parse(cachedData));
-                } else {
-                    document.getElementById('movieGrid').innerText = "Failed to load movies. Check your connection.";
-                }
+            } catch (err) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: span 2; color:#e50914;">Failed to load content.</p>';
             }
         }
 
         function displayMovies(movies) {
-            const grid = document.getElementById('movieGrid');
             grid.innerHTML = '';
-            
+            if (!movies || movies.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: span 2; color:#777; padding:20px;">No movies found.</p>';
+                return;
+            }
             movies.forEach(movie => {
-                const posterUrl = movie.poster_path 
-                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
-                    : 'https://via.placeholder.com/500x750?text=No+Image';
-
-                const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
-
-                const card = `
-                    <div class="movie-card">
-                        <img src="${posterUrl}" alt="${movie.title}" loading="lazy">
-                        <div class="movie-info">
-                            <h3>${movie.title}</h3>
-                            <span>${releaseYear}</span>
+                if (!movie.poster_path) return;
+                const card = document.createElement('div');
+                card.className = 'card';
+                const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+                card.innerHTML = `
+                    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}" loading="lazy">
+                    <div class="card-info">
+                        <h3>${movie.title || movie.name}</h3>
+                        <div class="meta">
+                            <span>${(movie.release_date || movie.first_air_date || '0000').split('-')[0]}</span>
+                            <span class="rating">★ ${rating}</span>
                         </div>
                     </div>
                 `;
-                grid.innerHTML += card;
+                card.onclick = () => openPlayer(movie.id);
+                grid.appendChild(card);
             });
         }
 
-        loadMovies();
+        function handleSearch(query) {
+            if (query.trim() === '') {
+                fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
+            } else {
+                fetchMovies(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+            }
+        }
+
+        function filterCategory(type, element, genreId) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById('search').value = '';
+
+            if (type === 'trending') {
+                fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
+            } else if (type === 'popular') {
+                fetchMovies(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`);
+            } else if (type === 'top_rated') {
+                fetchMovies(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`);
+            } else {
+                fetchMovies(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
+            }
+        }
+
+        function openPlayer(movieId) {
+            iframe.src = `https://vidsrc.sbs/embed/movie/${movieId}`;
+            modal.style.display = 'flex';
+        }
+
+        function closePlayer() {
+            iframe.src = '';
+            modal.style.display = 'none';
+        }
+
+        // Initial load
+        fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
     </script>
 </body>
 </html>
