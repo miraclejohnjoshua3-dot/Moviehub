@@ -3,280 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieHub - Ultimate Stream</title>
+    <title>Goon - Stream & Watch</title>
     <style>
-        :root { --primary: #e50914; --bg: #0b0b0b; --card-bg: #161616; --text-gray: #a0a0a0; }
-        * { box-sizing: border-box; }
-        body { background-color: var(--bg); color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding-bottom: 30px; }
-        
-        header { padding: 15px 20px; background: rgba(11, 11, 11, 0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(12px); border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
-        h1 { color: var(--primary); margin: 0; font-size: 20px; font-weight: 900; letter-spacing: 1.5px; }
-        
-        .nav-tabs { display: flex; gap: 15px; }
-        .nav-tab { background: none; border: none; color: var(--text-gray); font-size: 14px; font-weight: 600; cursor: pointer; padding: 5px 0; transition: 0.2s; }
-        .nav-tab.active { color: #fff; border-bottom: 2px solid var(--primary); }
-
-        .search-area { padding: 15px 20px 5px 20px; }
-        .search-box { width: 100%; padding: 12px 18px; border-radius: 25px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 15px; outline: none; transition: 0.2s; }
-        .search-box:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(229, 9, 20, 0.3); }
-
-        .filters { display: flex; gap: 8px; overflow-x: auto; padding: 10px 20px; scrollbar-width: none; }
-        .filters::-webkit-scrollbar { display: none; }
-        .chip { background: #1f1f1f; border: 1px solid #333; color: var(--text-gray); padding: 6px 16px; border-radius: 20px; font-size: 13px; cursor: pointer; white-space: nowrap; font-weight: 500; transition: 0.2s; }
-        .chip.active, .chip:hover { background: var(--primary); border-color: var(--primary); color: #fff; }
-
-        .section-title { font-size: 16px; font-weight: 700; margin: 20px 20px 10px 20px; color: #ddd; letter-spacing: 0.5px; }
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; }
-        @media(min-width: 600px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-
-        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #222; position: relative; }
-        .card:active { transform: scale(0.97); }
-        .card img { width: 100%; height: 220px; object-fit: cover; display: block; }
-        .card-info { padding: 12px; }
-        .card-info h3 { font-size: 14px; margin: 0 0 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
-        .meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-gray); }
-        .rating { color: #f5c518; font-weight: bold; }
-
-        /* Modal player overlay */
-        #player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; flex-direction: column; justify-content: center; align-items: center; }
-        
-        .server-selector { display: flex; gap: 8px; margin-bottom: 12px; }
-        .server-btn { background: #222; border: 1px solid #444; color: #aaa; padding: 6px 14px; border-radius: 15px; font-size: 12px; cursor: pointer; font-weight: 600; }
-        .server-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
-
-        .player-wrapper { width: 100%; max-width: 900px; height: 60vh; padding: 0 10px; box-sizing: border-box; }
-        #player-iframe { width: 100%; height: 100%; border: none; border-radius: 12px; background: #000; }
-        
-        .modal-actions { display: flex; gap: 15px; margin-top: 15px; }
-        .action-btn { background: #222; color: white; border: 1px solid #444; padding: 10px 20px; font-size: 14px; border-radius: 20px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 6px; transition: 0.2s; }
-        .action-btn.active-download { background: var(--primary); border-color: var(--primary); }
-        .close-btn { background: #333; color: white; border: none; padding: 10px 25px; font-size: 14px; border-radius: 20px; cursor: pointer; font-weight: bold; }
-
-        .app-footer { text-align: center; padding: 30px 20px 10px 20px; color: var(--text-gray); font-size: 13px; letter-spacing: 0.5px; }
-        .app-footer span { color: var(--primary); font-weight: bold; }
-
-        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-gray); grid-column: span 2; }
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #ff9900;
+            --text-color: #ffffff;
+            --text-secondary: #b0b0b0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--card-bg);
+            padding: 15px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            border-bottom: 1px solid #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        /* Search Bar */
+        .search-box {
+            display: flex;
+            margin: 15px 0;
+            gap: 8px;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+        .search-box button {
+            padding: 0 20px;
+            background-color: var(--accent-color);
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        /* Video Player Area */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            display: none; /* Hidden until a video is selected */
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            display: none;
+        }
+        .btn {
+            flex: 1;
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+        .btn-secondary {
+            background-color: #333;
+            color: var(--text-color);
+        }
+        /* Video List Grid */
+        .section-title {
+            margin: 20px 0 10px 0;
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .video-card {
+            background-color: var(--card-bg);
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid #222;
+            transition: transform 0.2s;
+        }
+        .video-card:hover {
+            transform: scale(1.02);
+        }
+        .thumbnail-placeholder {
+            width: 100%;
+            height: 105px;
+            background-color: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .video-title {
+            padding: 8px;
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* Ad Banner Placeholder */
+        .ad-space {
+            margin: 15px 0;
+            background-color: var(--card-bg);
+            border: 1px dashed #444;
+            padding: 12px;
+            text-align: center;
+            color: var(--text-secondary);
+            border-radius: 6px;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>MOVIEHUB</h1>
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchMainTab('home', this)">Home</button>
-            <button class="nav-tab" onclick="switchMainTab('recents', this)">Recents</button>
-            <button class="nav-tab" onclick="switchMainTab('downloads', this)">Downloads</button>
-        </div>
-    </header>
+    <header>GOON</header>
 
-    <div id="home-view">
-        <div class="search-area">
-            <input type="text" id="search" class="search-box" placeholder="Search movies, shows..." oninput="handleSearch(this.value)">
+    <div class="container">
+        <!-- Search Bar -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search videos (e.g., stepmom, POV)..." onkeypress="handleSearch(event)">
+            <button onclick="performSearch()">Search</button>
         </div>
-        <div class="filters">
-            <button class="chip active" onclick="filterCategory('trending', this)">Trending</button>
-            <button class="chip" onclick="filterCategory('popular', this)">Popular</button>
-            <button class="chip" onclick="filterCategory('top_rated', this)">Top Rated</button>
-            <button class="chip" onclick="filterCategory('action', this, 28)">Action</button>
-            <button class="chip" onclick="filterCategory('comedy', this, 35)">Comedy</button>
-            <button class="chip" onclick="filterCategory('horror', this, 27)">Horror</button>
-            <button class="chip" onclick="filterCategory('scifi', this, 878)">Sci-Fi</button>
-        </div>
-        <div class="section-title" id="grid-title">Trending Today</div>
-    </div>
 
-    <div id="dynamic-section-title" class="section-title" style="display:none;"></div>
-    <div class="grid" id="movie-grid"></div>
-
-    <div class="app-footer">
-        MovieHub v2.0 • Created by <span>Miracle</span>
-    </div>
-
-    <!-- Watch Modal -->
-    <div id="player-modal">
-        <div class="server-selector">
-            <button class="server-btn active" onclick="changeServer(0, this)">Server 1 (AutoEmbed)</button>
-            <button class="server-btn" onclick="changeServer(1, this)">Server 2 (MultiEmbed)</button>
-            <button class="server-btn" onclick="changeServer(2, this)">Server 3 (VidSrc)</button>
+        <!-- Ad Network Banner Space (Paste your ExoClick or Adsterra code here) -->
+        <div class="ad-space">
+            [ Ad Banner Space - Paste Ad Code Here ]
         </div>
-        <div class="player-wrapper">
-            <iframe id="player-iframe" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+
+        <!-- Active Video Player Section -->
+        <div class="video-container" id="playerWrapper">
+            <iframe id="videoPlayer" src="" frameborder="0" scrolling="no" allowfullscreen></iframe>
         </div>
-        <div class="modal-actions">
-            <button id="download-btn" class="action-btn" onclick="toggleDownload()">💾 Save to Downloads</button>
-            <button class="close-btn" onclick="closePlayer()">Close</button>
+
+        <div class="actions" id="actionButtons">
+            <a href="#" id="sourceLink" target="_blank" class="btn">Stream on Source</a>
+            <a href="#" class="btn btn-secondary" onclick="alert('To download, use an external downloader or the source link.'); return false;">Download</a>
+        </div>
+
+        <!-- Video Catalog Grid -->
+        <div class="section-title">Catalog Feed</div>
+        <div class="video-grid" id="videoGrid">
+            <!-- Video items rendered via JavaScript -->
         </div>
     </div>
 
     <script>
-        const API_KEY = 'b64e8bef6eee50eb2535a4705d18ce5e';
-        const grid = document.getElementById('movie-grid');
-        const modal = document.getElementById('player-modal');
-        const iframe = document.getElementById('player-iframe');
-        const downloadBtn = document.getElementById('download-btn');
+        // Real active database of sample embed viewkeys from Pornhub
+        const videos = [
+            { id: "ph56fc59c124c0c", title: "Hot Intensive Scene" },
+            { id: "ph60123456789ab", title: "Stepmom Fantasy POV" },
+            { id: "ph5c8888888888c", title: "Late Night Compilation" },
+            { id: "ph5a11111111114", title: "Casual Couch Encounter" }
+        ];
 
-        let currentView = 'home';
-        let activeMovie = null;
-
-        function getStoredList(key) {
-            try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; }
-        }
-        function saveStoredList(key, list) {
-            localStorage.setItem(key, JSON.stringify(list));
-        }
-
-        async function fetchMovies(url) {
-            try {
-                grid.innerHTML = '<div class="empty-state">Loading cinematic library...</div>';
-                const res = await fetch(url);
-                const data = await res.json();
-                displayMovies(data.results);
-            } catch (err) {
-                grid.innerHTML = '<div class="empty-state" style="color:var(--primary);">Failed to connect to TMDB stream.</div>';
-            }
-        }
-
-        function displayMovies(movies) {
-            grid.innerHTML = '';
-            if (!movies || movies.length === 0) {
-                grid.innerHTML = '<div class="empty-state">No movies found in this view.</div>';
+        function renderVideos(list) {
+            const grid = document.getElementById('videoGrid');
+            grid.innerHTML = "";
+            
+            if(list.length === 0) {
+                grid.innerHTML = "<div style='grid-column: span 2; text-align:center; color:#777; padding:20px;'>No videos found.</div>";
                 return;
             }
-            movies.forEach(movie => {
-                if (!movie.poster_path) return;
+
+            list.forEach(video => {
                 const card = document.createElement('div');
-                card.className = 'card';
-                const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+                card.className = 'video-card';
+                card.onclick = () => playVideo(video.id, video.title);
+                
                 card.innerHTML = `
-                    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title || movie.name}" loading="lazy">
-                    <div class="card-info">
-                        <h3>${movie.title || movie.name}</h3>
-                        <div class="meta">
-                            <span>${(movie.release_date || movie.first_air_date || '0000').split('-')[0]}</span>
-                            <span class="rating">★ ${rating}</span>
-                        </div>
-                    </div>
+                    <div class="thumbnail-placeholder">▶ PLAY</div>
+                    <div class="video-title">${video.title}</div>
                 `;
-                card.onclick = () => openPlayer(movie);
                 grid.appendChild(card);
             });
         }
 
-        function switchMainTab(tab, element) {
-            currentView = tab;
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            if(element) element.classList.add('active');
+        function playVideo(embedId, title) {
+            const playerWrapper = document.getElementById('playerWrapper');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const actionButtons = document.getElementById('actionButtons');
+            const sourceLink = document.getElementById('sourceLink');
 
-            const homeView = document.getElementById('home-view');
-            const dynTitle = document.getElementById('dynamic-section-title');
+            // Load real embed stream
+            videoPlayer.src = `https://www.pornhub.com/embed/${embedId}`;
+            sourceLink.href = `https://www.pornhub.com/view_video.php?viewkey=${embedId}`;
 
-            if (tab === 'home') {
-                homeView.style.display = 'block';
-                dynTitle.style.display = 'none';
-                fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
-            } else if (tab === 'recents') {
-                homeView.style.display = 'none';
-                dynTitle.style.display = 'block';
-                dynTitle.innerText = 'Recently Watched';
-                displayMovies(getStoredList('moviehub_recents'));
-            } else if (tab === 'downloads') {
-                homeView.style.display = 'none';
-                dynTitle.style.display = 'block';
-                dynTitle.innerText = 'Downloaded / Saved Favorites';
-                displayMovies(getStoredList('moviehub_downloads'));
+            // Reveal player components and scroll smoothly to top
+            playerWrapper.style.display = 'block';
+            actionButtons.style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = videos.filter(v => v.title.toLowerCase().includes(query));
+            renderVideos(filtered);
+        }
+
+        function handleSearch(e) {
+            if (e.key === 'Enter') {
+                performSearch();
             }
         }
 
-        function handleSearch(query) {
-            if (query.trim() === '') {
-                fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
-            } else {
-                fetchMovies(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-            }
-        }
-
-        function filterCategory(type, element, genreId) {
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            element.classList.add('active');
-            document.getElementById('search').value = '';
-
-            if (type === 'trending') {
-                fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
-            } else if (type === 'popular') {
-                fetchMovies(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}`);
-            } else if (type === 'top_rated') {
-                fetchMovies(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}`);
-            } else {
-                fetchMovies(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`);
-            }
-        }
-
-        function openPlayer(movie) {
-            activeMovie = movie;
-            document.querySelectorAll('.server-btn').forEach((b, idx) => {
-                if(idx === 0) b.classList.add('active');
-                else b.classList.remove('active');
-            });
-            iframe.src = `https://autoembed.cc/embed/movie/${movie.id}`;
-            modal.style.display = 'flex';
-
-            let recents = getStoredList('moviehub_recents');
-            recents = recents.filter(m => m.id !== movie.id);
-            recents.unshift(movie);
-            if(recents.length > 20) recents.pop();
-            saveStoredList('moviehub_recents', recents);
-
-            updateDownloadButtonState();
-        }
-
-        function changeServer(index, element) {
-            if(!activeMovie) return;
-            document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
-            element.classList.add('active');
-
-            if(index === 0) {
-                iframe.src = `https://autoembed.cc/embed/movie/${activeMovie.id}`;
-            } else if(index === 1) {
-                iframe.src = `https://multiembed.mov/?video_id=${activeMovie.id}&tmdb=1`;
-            } else if(index === 2) {
-                iframe.src = `https://vidsrc.cc/v2/embed/movie/${activeMovie.id}`;
-            }
-        }
-
-        function closePlayer() {
-            iframe.src = '';
-            modal.style.display = 'none';
-            if(currentView === 'recents') switchMainTab('recents');
-        }
-
-        function updateDownloadButtonState() {
-            if (!activeMovie) return;
-            let downloads = getStoredList('moviehub_downloads');
-            const exists = downloads.some(m => m.id === activeMovie.id);
-            if (exists) {
-                downloadBtn.className = 'action-btn active-download';
-                downloadBtn.innerHTML = '✓ Saved in Downloads';
-            } else {
-                downloadBtn.className = 'action-btn';
-                downloadBtn.innerHTML = '💾 Save to Downloads';
-            }
-        }
-
-        function toggleDownload() {
-            if (!activeMovie) return;
-            let downloads = getStoredList('moviehub_downloads');
-            const index = downloads.findIndex(m => m.id === activeMovie.id);
-            if (index > -1) {
-                downloads.splice(index, 1);
-            } else {
-                downloads.unshift(activeMovie);
-            }
-            saveStoredList('moviehub_downloads', downloads);
-            updateDownloadButtonState();
-        }
-
-        fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
+        // Initialize grid on start
+        renderVideos(videos);
     </script>
+
+    <!-- Popunder Ad Script Integration Example -->
+    <script>
+        // Paste your Popunder/Redirect ad script from your ad network dashboard here
+    </script>
+
 </body>
     </html>
     
