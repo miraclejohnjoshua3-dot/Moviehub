@@ -60,7 +60,7 @@
     <!-- Watch Modal -->
     <div id="player-modal">
         <div class="player-wrapper">
-            <iframe id="player-iframe" src="" allowfullscreen sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>
+            <iframe id="player-iframe" src="" allowfullscreen></iframe>
         </div>
         <button class="close-btn" onclick="closePlayer()">Close Player</button>
     </div>
@@ -133,8 +133,7 @@
         }
 
         function openPlayer(movieId) {
-            // Using multiembed for cleaner playback without popups
-            iframe.src = `https://multiembed.mov/?video_id=${movieId}&tmdb=1`;
+            iframe.src = `https://vidsrc.xyz/embed/movie?tmdb=${movieId}`;
             modal.style.display = 'flex';
         }
 
@@ -147,5 +146,4 @@
         fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`);
     </script>
 </body>
-    </html>
-    
+</html>
